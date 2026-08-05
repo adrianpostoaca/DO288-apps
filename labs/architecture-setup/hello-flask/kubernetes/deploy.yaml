@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: hello-flask
-          image: registry.ocp4.example.com:8443/developer/hello-flask:latest
+          image: default-route-openshift-image-registry.apps-crc.testing/architecture-setup/hello-flask:latest
           ports:
             - name: http
               containerPort: 8081
