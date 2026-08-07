@@ -1,52 +1,9 @@
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
-metadata:
-  name: node-server
-spec:
-  source:
-    type: Dockerfile
-    dockerfile: |
-      FROM registry.access.redhat.com/ubi8/nodejs-16:latest
-
-      RUN echo "const http = require('http'); \
-      const hostname = '0.0.0.0'; \
-      const port = 4000; \
-      const server = http.createServer((req, res) => { \
-        res.statusCode = 200; \
-        res.setHeader('Content-Type', 'text/plain'); \
-        res.end('Hello World'); \
-      }); \
-      server.listen(port, hostname, () => { \
-        console.log(\`Server running: \${hostname}:\${port}\`); \
-      }); \
-      " > server.js
-
-      EXPOSE 4000
-
-      CMD ["node", "server.js"]
-  strategy:
-    type: Docker
-  output:
-    to:
-      kind: ImageStreamTag
-      name: node-server:latest
-  triggers:
-    - type: ConfigChange
----
-apiVersion: image.openshift.io/v1
-kind: ImageStream
-metadata:
-  name: node-server
-spec:
-  tags:
-    - name: latest
-      importPolicy:
-        insecure: true
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node-server
+  labels:
+    app.kubernetes.io/part-of: node-server-app
 spec:
   replicas: 1
   selector:
@@ -59,7 +16,7 @@ spec:
     spec:
       containers:
         - name: node-server
-          image: default-route-openshift-image-registry.apps-crc.testing/deploy-introduction/node-server:latest
+          image: node-server:latest  # OpenShift will automatically resolve this to your local image build
           ports:
             - containerPort: 4000
 ---
@@ -67,6 +24,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: node-server
+  labels:
+    app.kubernetes.io/part-of: node-server-app
 spec:
   selector:
     app: node-server
@@ -80,9 +39,12 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: node-server
+  labels:
+    app.kubernetes.io/part-of: node-server-app
 spec:
   port:
     targetPort: 4000
   to:
     kind: Service
     name: node-server
+
