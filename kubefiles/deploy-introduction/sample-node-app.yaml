@@ -6,7 +6,7 @@ spec:
   source:
     type: Dockerfile
     dockerfile: |
-      FROM registry.ocp4.example.com:8443/ubi8/nodejs-16:latest
+      FROM registry.access.redhat.com/ubi8/nodejs-16:latest
 
       RUN echo "const http = require('http'); \
       const hostname = '0.0.0.0'; \
@@ -59,7 +59,7 @@ spec:
     spec:
       containers:
         - name: node-server
-          image: image-registry.openshift-image-registry.svc:5000/deploy-introduction/node-server:latest
+          image: default-route-openshift-image-registry.apps-crc.testing/deploy-introduction/node-server:latest
           ports:
             - containerPort: 80
 ---
