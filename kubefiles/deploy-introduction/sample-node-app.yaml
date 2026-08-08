@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: node-server
-          image: node-server:latest
+          image: default-route-openshift-image-registry.apps-crc.testing/deploy-introduction/node-server:latest
           ports:
             - name: http-4000        # <-- Assigned string name to container port
               containerPort: 4000
