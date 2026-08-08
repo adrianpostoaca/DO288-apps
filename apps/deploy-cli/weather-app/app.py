@@ -29,6 +29,6 @@ def ready():
 def alive():
     return "Ok"
 
-
 if __name__ == "__main__":
-    application.run()
+    # Bind to all interfaces (0.0.0.0) on OpenShift's default port (8080)
+    application.run(host="0.0.0.0", port=8080)
