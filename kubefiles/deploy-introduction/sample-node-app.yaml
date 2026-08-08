@@ -16,9 +16,31 @@ spec:
     spec:
       containers:
         - name: node-server
-          image: node-server:latest  # OpenShift will automatically resolve this to your local image build
+          image: node-server:latest
           ports:
             - containerPort: 4000
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /livez
+              port: 4000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: 4000
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+
 ---
 apiVersion: v1
 kind: Service
