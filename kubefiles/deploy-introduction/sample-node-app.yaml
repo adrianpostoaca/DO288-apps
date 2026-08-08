@@ -18,13 +18,14 @@ spec:
         - name: node-server
           image: node-server:latest
           ports:
-            - containerPort: 4000
+            - name: http-4000        # <-- Assigned string name to container port
+              containerPort: 4000
               protocol: TCP
           livenessProbe:
             failureThreshold: 3
             httpGet:
               path: /livez
-              port: 4000
+              port: http-4000        # <-- Referenced the named port
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 10
@@ -34,7 +35,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /readyz
-              port: 4000
+              port: http-4000        # <-- Referenced the named port
               scheme: HTTP
             initialDelaySeconds: 3
             periodSeconds: 10
@@ -52,10 +53,12 @@ spec:
   selector:
     app: node-server
   ports:
-    - protocol: TCP
+    - name: http-4000                # <-- Match string name here
+      protocol: TCP
       port: 4000
-      targetPort: 4000
+      targetPort: http-4000          # <-- Targets named container port
   type: ClusterIP
+
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -65,7 +68,7 @@ metadata:
     app.kubernetes.io/part-of: node-server-app
 spec:
   port:
-    targetPort: 4000
+    targetPort: http-4000            # <-- Targets named service port
   to:
     kind: Service
     name: node-server
