@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:1-51
 
-ENV PORT=80
+ENV PORT=8080
 EXPOSE ${PORT}
 
 USER root
@@ -8,5 +8,10 @@ USER root
 ADD . $HOME
 
 RUN npm ci --omit=dev && rm -rf .npm
+
+RUN chgrp -R 0 /var/cache && \
+    chmod -R g=u /var/cache
+
+USER 1001
 
 CMD npm start
